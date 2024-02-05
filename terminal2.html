@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Terminal Simulator</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Courier New', monospace;
+      /* background-color: #1e1e1e; */
+      background: none;
+      color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      font-size: 13px;
+    }
+
+    #terminal-container {
+      position: relative;
+      width: 100%;
+      max-width: 330px;
+    }
+
+    #terminal {
+      width: 100%;
+      height: 85vh;
+      background-color: #151e29;
+      color: #ffffff;
+      overflow: auto;
+      padding: 20px;
+      box-sizing: border-box;
+      border-radius: 10px;
+      border: 2px solid #ffffff;
+      margin-bottom: 20px;
+    }
+
+    #input-container {
+      display: flex;
+      align-items: center;
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      padding: 30px 20px;
+      box-sizing: border-box;
+    }
+
+    #prompt {
+      margin-right: 10px;
+    }
+
+    #command-input {
+      flex: 1;
+      padding: 10px;
+      box-sizing: border-box;
+      border: none;
+      outline: none;
+      background-color: transparent;
+      color: #ffffff;
+      font-family: 'Courier New', monospace;
+    }
+
+    #menu-bar {
+      position: absolute;
+      top: 77vh;
+      right: 0;
+      display: flex;
+      justify-content: center;
+      /* Alinea el contenido horizontalmente al centro */
+      align-items: center;
+      /* Alinea el contenido verticalmente al centro */
+      margin: 10px;
+    }
+
+    .button {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      margin-right: 5px;
+      cursor: pointer;
+    }
+
+    .red {
+      background-color: #ff5555;
+    }
+
+    .yellow {
+      background-color: #ffcc00;
+    }
+
+    .green {
+      background-color: #66ff66;
+    }
+
+    /* .usertitle h2 {
+      margin: auto;
+      width: 50%;
+    } */
+
+    #command-input {
+      padding: 8px;
+    }
+
+    @media only screen and (max-width: 600px) {
+      body {
+        font-size: 11px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="terminal-container">
+    <div id="terminal">
+      <p>¡Welcome to Incognito Terminal!</p>
+      <div id="menu-bar">
+        <div class="usertitle">
+        </div>
+        <div class="button red"></div>
+        <div class="button yellow"></div>
+        <div class="button green"></div>
+      </div>
+
+      <!-- Existing terminal content -->
+    </div>
+    <div id="input-container">
+      <div id="prompt">~$</div>
+      <input type="text" id="command-input" autofocus autocomplete="off">
+    </div>
+  </div>
+
+  <script>
+
+    const terminal = document.getElementById('terminal');
+    const commandInput = document.getElementById('command-input');
+    let currentDirectory = "";
+    let username = "";
+
+    // Muestra un mensaje indicando al usuario que ingrese su nombre
+    displayResult("Ingrese un nombre de usuario:");
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === "Enter") {
+        const command = commandInput.value;
+
+        if (!username) {
+          // Si aún no se ha ingresado el nombre de usuario, asigna la entrada al nombre de usuario
+          username = command.trim().toLowerCase();
+          currentDirectory = `/home/${username}`;
+          displayResult(`Nombre de usuario establecido: ${username}`);
+        } else {
+          // Si ya se ha ingresado el nombre de usuario, ejecuta el comando
+          displayCommand(command);
+          executeCommand(command);
+        }
+
+        commandInput.value = "";
+      } else if (e.ctrlKey && e.key === "l") {
+        clearTerminal();
+      }
+    });
+
+    function executeCommand(command) {
+      let result;
+      const trimmedCommand = command.trim();
+
+      switch (trimmedCommand) {
+        case "clear":
+          clearTerminal();
+          return;
+        case "ls":
+          result = listDirectoryContents();
+          break;
+        case "pwd":
+          result = currentDirectory;
+          break;
+        case "date":
+          result = new Date().toLocaleString();
+          break;
+        default:
+          if (trimmedCommand.startsWith("cd ")) {
+            const targetDirectory = trimmedCommand.substring(3).trim();
+
+            if (targetDirectory === "..") {
+              // Navegar un nivel hacia arriba
+              currentDirectory = getParentDirectory(currentDirectory);
+            } else {
+              // Navegar a un directorio específico
+              currentDirectory = getTargetDirectory(currentDirectory, targetDirectory);
+            }
+
+            result = "";
+          } else {
+            result = `Comando no reconocido: ${trimmedCommand}`;
+          }
+          break;
+      }
+
+      displayResult(result);
+    }
+
+    function getParentDirectory(directory) {
+      // Eliminar la última parte del directorio
+      return directory.replace(/\/[^/]+$/, '');
+    }
+
+    function getTargetDirectory(directory, target) {
+      if (target === "..") {
+        // Navegar un nivel hacia arriba
+        return getParentDirectory(directory);
+      } else {
+        // Navegar a un directorio específico
+        return `${directory}/${target}`;
+      }
+    }
+
+    function listDirectoryContents() {
+      const currentDirName = currentDirectory.substring(currentDirectory.lastIndexOf("/") + 1);
+
+      switch (currentDirName) {
+        case "home":
+          return username;
+        case username:
+          return "Escritorio Descargas Scripts";
+        default:
+          return "Contenido no disponible";
+      }
+    }
+
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === "Enter") {
+        const command = commandInput.value;
+        displayCommand(command);
+        executeCommand(command);
+        commandInput.value = "";
+      } else if (e.ctrlKey && e.key === "l") {
+        clearTerminal();
+      }
+    });
+
+    function displayCommand(command) {
+      const commandElement = document.createElement('div');
+      commandElement.textContent = command.trim() ? `$ ${command}` : '';
+      terminal.appendChild(commandElement);
+    }
+
+    function executeCommand(command) {
+      let result;
+      switch (command.trim()) {
+        case "clear":
+          clearTerminal();
+          return;
+        case "ls":
+          result = listDirectoryContents();
+          break;
+        case "pwd":
+          result = currentDirectory;
+          break;
+        case "date":
+          result = new Date().toLocaleString();
+          break;
+        case "cd Escritorio":
+          currentDirectory = "/home/user/Escritorio";
+          result = "";
+          break;
+        case "cd Descargas":
+          currentDirectory = "/home/user/Descargas";
+          result = "";
+          break;
+        case "cd Scripts":
+          currentDirectory = "/home/user/Scripts";
+          result = "";
+          break;
+        case "cd ..":
+          currentDirectory = "/home/user/";
+          result = "";
+          break;
+        case "cd ../":
+          currentDirectory = "/home/user/";
+          result = "";
+          break;
+        case "cd ../..":
+          currentDirectory = "/home/";
+          result = "";
+          break;
+        case "cd ../..":
+          currentDirectory = "/home/";
+          result = "";
+          break;
+        case "":
+          currentDirectory = "";
+          result = "";
+          break;
+        // Agrega más comandos según sea necesario
+        default:
+          result = `Comando no reconocido: ${command}`;
+          break;
+      }
+      displayResult(result);
+    }
+    function listDirectoryContents() {
+      const currentDirName = currentDirectory.substring(currentDirectory.lastIndexOf("/") + 1);
+
+      switch (currentDirName) {
+        case "Escritorio":
+          return "archivo1 archivo2 carpeta1";
+        case "Descargas":
+          return "archivo3 archivo4 carpeta2";
+        case "Scripts":
+          return "script1 script2 script3";
+        default:
+          return "Escritorio Descargas Scripts";
+      }
+    }
+
+    function displayResult(result) {
+      const resultElement = document.createElement('div');
+      resultElement.textContent = result;
+      terminal.appendChild(resultElement);
+    }
+
+    function clearTerminal() {
+      const commandElements = terminal.querySelectorAll('#terminal > :not(#menu-bar)');
+
+      commandElements.forEach(element => {
+        terminal.removeChild(element);
+      });
+    }
+
+    function executeCommand(command) {
+      let result;
+      const trimmedCommand = command.trim();
+
+      switch (trimmedCommand) {
+        case "clear":
+          clearTerminal();
+          return;
+        case "ls":
+          result = listDirectoryContents();
+          break;
+        case "pwd":
+          result = currentDirectory;
+          break;
+        case "date":
+          result = new Date().toLocaleString();
+          break;
+        case "":
+          result = "";
+          break;
+        default:
+          if (trimmedCommand.startsWith("cd ")) {
+            const targetDirectory = trimmedCommand.substring(3).trim();
+
+            if (targetDirectory === "..") {
+              // Navegar un nivel hacia arriba
+              currentDirectory = currentDirectory.replace(/\/[^/]+$/, ''); // Eliminar la última parte del directorio
+            } else {
+              // Navegar a un directorio específico
+              currentDirectory = `${currentDirectory}/${targetDirectory}`;
+            }
+
+            result = "";
+          } else {
+            result = `Comando no reconocido: ${trimmedCommand}`;
+          }
+          break;
+      }
+
+      displayResult(result);
+    }
+
+
+
+  </script>
+</body>
+
+</html>

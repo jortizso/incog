@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Terminal Simulator</title>
+  <style>
+    /* Estilos para navegadores webkit (Chrome, Safari) */
+    *::-webkit-scrollbar {
+      width: 9px;
+      border-radius: 10px;
+      /* Ancho del scrollbar */
+    }
+
+    *::-webkit-scrollbar-thumb {
+      background-color: #181e42c7;
+      border-radius: 10px;
+      /* Color del thumb (barra de desplazamiento) */
+      border: 1px solid #fff;
+      border-radius: 6px;
+      /* Borde redondeado del thumb */
+    }
+
+
+    *::-webkit-scrollbar-track {
+      border-radius: 10px;
+      background-color: #0d1335c7;
+      /* Color de fondo del track (área del scrollbar) */
+    }
+
+    /* Estilos para navegadores basados en Gecko (Firefox) */
+    *::-moz-scrollbar {
+      width: 12px;
+      /* Ancho del scrollbar */
+    }
+
+    *::-moz-scrollbar-thumb {
+      background-color: #888;
+      /* Color del thumb (barra de desplazamiento) */
+      border-radius: 6px;
+      /* Borde redondeado del thumb */
+    }
+
+    *::-moz-scrollbar-track {
+      background-color: #141414;
+      /* Color de fondo del track (área del scrollbar) */
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      /* background-color: rgb(36, 36, 36); */
+      font-family: 'Courier New', monospace;
+      background-color: #1e1e1e00;
+      color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      height: 100vh;
+    }
+
+    #terminal-container {
+      position: relative;
+      width: 100%;
+      /* Establece la altura máxima */
+      overflow: auto;
+      /* Agrega scroll cuando el contenido es demasiado largo */
+    }
+
+    #terminal {
+      width: 100%;
+      height: 70vh;
+      background-color: #16171D;
+      color: #ffffff;
+      overflow: auto;
+      padding: 20px;
+      box-sizing: border-box;
+      border-radius: 10px;
+      border: 2px solid #ffffff;
+      margin-bottom: 20px;
+      overflow: auto;
+      max-height: 85vh;
+      /* Establece la altura máxima */
+      overflow: auto;
+      /* Agrega scroll cuando el contenido es demasiado largo */
+      background-color: #16171D;
+      color: #ffffff;
+      padding: 20px;
+      box-sizing: border-box;
+      border-radius: 10px;
+      border: 2px solid #ffffff;
+      margin-bottom: 20px;
+    }
+
+    #input-container {
+      display: flex;
+      align-items: center;
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      padding: 5px 20px;
+      box-sizing: border-box;
+      margin-top: 10px;
+      /* Añade un espacio entre la terminal y el input */
+    }
+
+    #prompt {
+      margin-right: 10px;
+    }
+
+    #command-input {
+      flex: 1;
+      padding: 10px;
+      box-sizing: border-box;
+      border: none;
+      outline: none;
+      background-color: transparent;
+      color: #ffffff;
+      font-family: 'Courier New', monospace;
+    }
+
+    #menu-bar {
+      position: absolute;
+      top: 0;
+      right: 0;
+      display: flex;
+      justify-content: center;
+      /* Alinea el contenido horizontalmente al centro */
+      align-items: center;
+      /* Alinea el contenido verticalmente al centro */
+      margin: 10px;
+    }
+
+    .button {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      margin-right: 5px;
+      cursor: pointer;
+    }
+
+    .red {
+      background-color: #ff5555;
+    }
+
+    .yellow {
+      background-color: #ffcc00;
+    }
+
+    .green {
+      background-color: #66ff66;
+    }
+
+    /* .usertitle h2 {
+      margin: auto;
+      width: 50%;
+    } */
+
+    #command-input {
+      padding: 8px;
+    }
+
+    @media only screen and (max-width: 600px) {
+      body {
+        font-size: 11px;
+      }
+    }
+
+    #terminal-container {
+      position: relative;
+      width: 100%;
+      max-height: 85vh;
+      overflow: auto;
+    }
+
+    #terminal {
+      background-color: #10142e;
+      color: #ffffff;
+      padding: 20px;
+      box-sizing: border-box;
+      border-radius: 10px;
+      border: 2px solid #ffffff;
+      margin-bottom: 20px;
+    }
+
+    #input-container {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      border: 2px solid #fff;
+      border-top: none;
+      border-radius: 0;
+      border-bottom-left-radius: 10px;
+      border-bottom-right-radius: 10px;
+      box-sizing: border-box;
+      background-color: #10142e;
+    }
+
+    #prompt {
+      margin-right: 10px;
+    }
+
+    #command-input {
+      flex: 1;
+      padding: 8px;
+      box-sizing: border-box;
+      border: none;
+      outline: none;
+      background-color: transparent;
+      color: #ffffff;
+      font-family: 'Courier New', monospace;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="terminal-container">
+    <div id="terminal">
+      <p>¡Welcome to Incognito Terminal!</p>
+      <div id="menu-bar">
+        <div class="usertitle">
+        </div>
+        <div class="button green"></div>
+        <div class="button yellow"></div>
+        <div class="button red"></div>
+      </div>
+
+      <!-- Existing terminal content -->
+    </div>
+    <div id="input-container">
+      <div id="prompt">~$</div>
+      <input type="text" id="command-input" autofocus autocomplete="off">
+    </div>
+  </div>
+
+  <script>
+    const terminal = document.getElementById('terminal');
+    const commandInput = document.getElementById('command-input');
+    let currentDirectory = "";
+    let username = "";
+
+    // Muestra un mensaje indicando al usuario que ingrese su nombre
+    displayResult("Ingrese un nombre de usuario:");
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === "Enter") {
+        const command = commandInput.value;
+
+        if (!username) {
+          // Validación de usuario inválido
+          if (!command.trim()) {
+            // No permitir un nombre de usuario vacío o solo con espacios en blanco
+            return;
+          }
+
+          // Convertir la primera letra del nombre de usuario a minúscula
+          username = command.trim().toLowerCase().charAt(0) + command.trim().slice(1);
+          currentDirectory = `/home/${username}`;
+          displayResult(`Nombre de usuario establecido: ${username}`);
+        } else {
+          displayCommand(command);
+          executeCommand(command);
+        }
+
+        commandInput.value = "";
+      } else if (e.ctrlKey && e.key === "l") {
+        clearTerminal();
+      }
+    });
+
+
+    function executeCommand(command) {
+      let result;
+      const trimmedCommand = command.trim();
+
+      switch (trimmedCommand) {
+        case "clear":
+          clearTerminal();
+          return;
+        case "ls":
+          result = listDirectoryContents();
+          break;
+        case "pwd":
+          result = currentDirectory;
+          break;
+        case "date":
+          result = new Date().toLocaleString();
+          break;
+        case "./script.sh":
+          if (currentDirectory.endsWith("/Scripts")) {
+            result = "<br>!Bienvenido!<br><br>############################################<br># Has ejecutado un script escrito en bash.  #<br>############################################";
+          } else {
+            result = "Error: archivo no encontrado";
+          }
+          break;
+          case "bash script.sh":
+          if (currentDirectory.endsWith("/Scripts")) {
+            result = "<br>!Bienvenido!<br><br>############################################<br># Has ejecutado un script escrito en bash.  #<br>############################################";
+          } else {
+            result = "Error: archivo no encontrado";
+          }
+          break;
+        case "cat script.sh":
+          if (currentDirectory.endsWith("/Scripts")) {
+            result = '<br>#!/bin/bash <br> echo "!Bienvenido!"<br>echo "############################################" <br> echo "# Has ejecutado un script escrito en bash. #" <br> echo "############################################"'
+          }
+          else {
+            result = "Error: archivo no encontrado";
+          }
+          break;
+        case "python main.py":
+          if (currentDirectory.endsWith("/Scripts")) {
+            result = "<br>!Bienvenido!<br><br>##############################################<br># Has ejecutado un script escrito en python.  #<br>##############################################";
+          } else {
+            result = "Error: archivo no encontrado";
+          }
+          break;
+        case "cat main.py":
+          if (currentDirectory.endsWith("/Scripts")) {
+            result = '<br> print("!Bienvenido!")<br>print("##############################################") <br> print("# Has ejecutado un script escrito en python. #") <br> print("##############################################")'
+          }
+          else {
+            result = "Error: archivo no encontrado";
+          }
+          break;
+        case "cat commands.txt":
+          if (currentDirectory.endsWith("/Scripts")) {
+            result = "!Bienvenido a Incognito Terminal! <br> pwd: Muestra la ruta del directorio actual. <br> ls: Lista los archivos y directorios en el directorio actual. <br> cd [directorio]: Cambia al directorio especificado. <br> clear: Limpia la pantalla del terminal. <br> date: Muestra la fecha y hora actuales. <br> python [archivo.py]: Ejecuta un script de Python. <br> bash [archivo.sh]: Ejecuta un script de Bash. <br> cat [archivo]: Muestra el contenido de un archivo. <br> echo [mensaje]: Muestra un mensaje en la pantalla. <br> mkdir [nombre]: Crea un nuevo directorio. <br> rm [archivo]: Elimina un archivo. <br> rmdir [directorio]: Elimina un directorio vacío. <br> man [comando]: Muestra la página de manual de un comando. <br> help: Muestra información de ayuda y comandos disponibles.";
+          } else {
+            result = "Error: Debes estar en el directorio 'Scripts' para visualizar este archivo.";
+          }
+          break;
+        default:
+          if (trimmedCommand.startsWith("echo ")) {
+            const echoMessage = trimmedCommand.substring(5).trim();
+            result = echoMessage;
+          } else if (trimmedCommand.startsWith("cd ")) {
+            const targetDirectory = trimmedCommand.substring(3).trim();
+
+            if (targetDirectory === "..") {
+              currentDirectory = getParentDirectory(currentDirectory);
+            } else {
+              currentDirectory = getTargetDirectory(currentDirectory, targetDirectory);
+            }
+
+            result = "";
+          } else {
+            result = `Comando no reconocido: ${trimmedCommand}`;
+          }
+          break;
+      }
+
+      displayResult(result);
+    }
+
+
+    function listDirectoryContents() {
+      const currentDirName = currentDirectory.substring(currentDirectory.lastIndexOf("/") + 1);
+
+      switch (currentDirName) {
+        case "home":
+          return username;
+        case username:
+          return "Escritorio Descargas Scripts";
+        case "Escritorio":
+          return "archivo1 archivo2 carpeta1";
+        case "Descargas":
+          return "img.png";
+        case "Scripts":
+          return "main.py script.sh commands.txt";
+        default:
+          return "Contenido no disponible";
+      }
+    }
+
+    function displayCommand(command) {
+      const commandElement = document.createElement('div');
+      commandElement.textContent = command.trim() ? `$ ${command}` : '';
+      terminal.appendChild(commandElement);
+    }
+
+    function displayResult(result) {
+      const resultElement = document.createElement('div');
+      resultElement.innerHTML = result;  // Utilizar innerHTML en lugar de textContent
+      terminal.appendChild(resultElement);
+
+      // Desplazar hacia abajo para mostrar el nuevo contenido
+      terminal.scrollTop = terminal.scrollHeight;
+    }
+
+    function clearTerminal() {
+      const commandElements = terminal.querySelectorAll('#terminal > :not(#menu-bar)');
+
+      commandElements.forEach(element => {
+        terminal.removeChild(element);
+      });
+    }
+
+    function getParentDirectory(directory) {
+      // Eliminar la última parte del directorio
+      return directory.replace(/\/[^/]+$/, '');
+    }
+
+    function getTargetDirectory(directory, target) {
+      if (target === "..") {
+        // Navegar un nivel hacia arriba
+        return getParentDirectory(directory);
+      } else {
+        // Navegar a un directorio específico
+        return `${directory}/${target}`;
+      }
+    }
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === "Enter") {
+        const command = commandInput.value;
+
+        if (!username) {
+          // Validación de usuario inválido
+          if (command.trim() === "") {
+            // No permitir un nombre de usuario vacío
+            return;
+          }
+
+          // Convertir la primera letra del nombre de usuario a minúscula
+          username = command.trim().toLowerCase().charAt(0) + command.trim().slice(1);
+          currentDirectory = `/home/${username}`;
+          displayResult(`Nombre de usuario establecido: ${username}`);
+        } else {
+
+          // ... Tu código JavaScript existente ...
+        }
+
+        commandInput.value = "";
+      } else if (e.ctrlKey && e.key === "l") {
+        clearTerminal();
+      }
+    });
+  </script>
+</body>
+
+</html>

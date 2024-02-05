@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: #000;
+}
+
+.navbar {
+    background: #04040c;
+    height: 80px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+}
+
+.nav_logo {
+    font-weight: bold;
+    font-size: 20px;
+    color: white;
+    margin: auto;
+    display: flex; /* Nueva línea */
+    align-items: center; /* Nueva línea */
+}
+
+.nav_logo img {
+    max-width: 100%; /* Cambiado para hacer la imagen responsive */
+    height: auto;
+    width: 200px; /* Ajusta el ancho según tus necesidades */
+    margin: 0 auto; /* Nueva línea para centrar la imagen horizontalmente */
+}
+
+.nav_items {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    margin-right: 15px;
+    order: 2;
+}
+
+.nav_items a {
+    margin: 0 5px;
+    font-size: .8rem;
+    padding: 10px;
+    color: white;
+    position: relative;
+    text-decoration: none;
+}
+
+.nav_items a::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 0;
+    height: 2px;
+    background: #04040c;
+    transition: width 0.5s;
+}
+
+.nav_items a:hover::before {
+    width: 100%;
+}
+
+.nav_toggle {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .nav_items {
+        position: absolute;
+        top: 57px;
+        left: 0;
+        background: #04040c;
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        height: -webkit-fill-available;
+        transform: translateX(-100%);
+        transition: 0.3s ease all;
+    }
+
+    .nav_items a {
+        text-align: center;
+        top: 20px;
+        margin: 10px 0;
+    }
+
+    .nav_toggle {
+        display: flex !important;
+        flex-direction: column;
+        margin: 15px;
+    }
+
+    .nav_toggle span {
+        width: 30px;
+        height: 3px;
+        background: white;
+        margin-bottom: 5px;
+        border-radius: 2px;
+        transform-origin: 5px 0px;
+        transition: all .2s linear;
+    }
+
+    .close span {
+        transform: rotate(45deg) translate(0px, 0px);
+    }
+
+    .close span:nth-child(2) {
+        display: none;
+    }
+
+    .close span:nth-child(3) {
+        transform: rotate(-45deg) translate(-5px, 1px);
+    }
+
+    .open {
+        transform: translateX(0) !important
+    }
+}
+
+  </style>
+</head>
+
+<body>
+  <nav class="navbar">
+    <div class="nav_logo"><img src="../images/text.png" alt=""></div>
+    <div class="nav_items" id="_items">
+      <a href="#inicio">Inicio</a>
+      <a href="#acercade">Acerca de</a>
+      <a href="#tienda">Tienda</a>
+      <a href="#lab">Lab</a>
+      <a href="#noticias">Noticias</a>
+      <a class="nope" href="#">Recursos</a>
+      <i class="fas fa-angle-down"></i>
+
+      <a href="#contacto">Contacto</a>
+    </div>
+    <div class="nav_toggle" id="_toggle">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+    <script>
+      _toggle.onclick = () => {
+        _items.classList.toggle("open")
+        _toggle.classList.toggle("close")
+      }
+
+    </script>
+</body>
+
+</html>
